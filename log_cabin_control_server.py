@@ -630,6 +630,10 @@ def main():
     for blind in blind_objects:
         blind_objects[blind].start()
 
+    # Close all blinds
+    logger.debug("Closing all blinds")
+    set_all_blinds(CLOSED)
+
     # Run this unless interrupted by KeyboardInterrupt
     try:
         # Start API thread
