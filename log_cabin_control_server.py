@@ -202,10 +202,10 @@ def blinds():
         # Perform an extra subroutine
         state_average = get_blind_state_average()
         logger.debug(f"Average state of blinds: {state_average}")
-        if 7 <= current_hour < 8 and state_average > 14.5:  # 7 - 8 AM in the morning & blinds closed
+        if 7 <= current_hour < 8 and state_average < 15.5:  # 7 - 8 AM in the morning & blinds open
             logger.debug("Running blinds morning subroutine")
             blinds_morning()  # Will close blinds if successful
-        elif 17 <= current_hour < 22 and state_average < 15.5:  # 5 - 10 PM in the evening & blinds open
+        elif 17 <= current_hour < 22 and state_average > 14.5:  # 5 - 10 PM in the evening & blinds closed
             logger.debug("Running blinds evening subroutine")
             blinds_evening()  # Will open blinds if successful
         else:
