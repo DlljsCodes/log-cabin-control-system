@@ -202,12 +202,12 @@ def blinds():
         # Perform an extra subroutine
         state_average = get_blind_state_average()
         logger.debug(f"Average state of blinds: {state_average}")
-        if 7 <= current_hour < 8 and state_average > 14.5:  # 7 - 8 AM in the morning & blinds closed
+        if 7 <= current_hour < 8 and state_average < 15.5:  # 7 - 8 AM in the morning & blinds open
             logger.debug("Running blinds morning subroutine")
-            blinds_morning()
-        elif 17 <= current_hour < 22 and state_average < 15.5:  # 5 - 10 PM in the evening & blinds open
+            blinds_morning()  # Will close blinds if successful
+        elif 17 <= current_hour < 22 and state_average > 14.5:  # 5 - 10 PM in the evening & blinds closed
             logger.debug("Running blinds evening subroutine")
-            blinds_evening()
+            blinds_evening()  # Will open blinds if successful
         else:
             logger.debug("No action needed, skipping")  # Won't need to run a subroutine right now
 
@@ -230,7 +230,7 @@ def blinds_morning():
 
     # Check to see if it exceeds the thresholds
     if cloud_cover < CLOUD_COVER_THRESHOLD and temperature > TEMPERATURE_THRESHOLD:
-        logger.debug("Closing blinds")  # Open all the blinds
+        logger.debug("Closing blinds")  # Close all the blinds
         set_all_blinds(CLOSED)
         write_event("BLNDMOR", f"{cloud_cover}, {temperature}", "BLNDSTA", "all, 20", True)
     else:
@@ -249,7 +249,7 @@ def blinds_evening():
 
     # Check to see if it exceeds the threshold
     if light_level < LIGHT_LEVEL_THRESHOLD:
-        logger.debug("Opening blinds")  # Close all the blinds
+        logger.debug("Opening blinds")  # Open all the blinds
         set_all_blinds(OPEN)
         write_event("BLNDEVE", str(light_level), "BLNDSTA", "all, 10", True)
     else:
@@ -629,6 +629,10 @@ def main():
     # Start each blind object
     for blind in blind_objects:
         blind_objects[blind].start()
+
+    # Close all blinds
+    logger.debug("Closing all blinds")
+    set_all_blinds(CLOSED)
 
     # Run this unless interrupted by KeyboardInterrupt
     try:
