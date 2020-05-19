@@ -36,13 +36,16 @@ class LightSensor:
             if self.emulation_mode:
                 return self.emulation_values[measurement]
             else:
-                values = {
-                    "lux": self.sensor.lux,
-                    "visible": self.sensor.visible,
-                    "infrared": self.sensor.infrared,
-                    "full_spectrum": self.sensor.full_spectrum,
-                    "raw_luminosity": self.sensor.raw_luminosity}
-                return values[measurement]
+                if measurement == "lux":
+                    return self.sensor.lux
+                elif measurement == "visible":
+                    return self.sensor.visible
+                elif measurement == "infrared":
+                    return self.sensor.infrared
+                elif measurement == "full_spectrum":
+                    return self.sensor.full_spectrum
+                elif measurement == "raw_luminosity":
+                    return self.sensor.raw_luminosity
         else:
             raise ValueError("Specified measurement value not valid.")
 
