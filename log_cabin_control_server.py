@@ -223,8 +223,8 @@ def blinds_morning():
     # Obtain forecast, specifically cloud cover and temperature max values
     logger.debug("Getting forecast")
     forecast = weather_data(CABIN_LOCATION["LATITUDE"], CABIN_LOCATION["LONGITUDE"], API_KEY)
-    cloud_cover = forecast.daily.data_class.cloud_cover
-    temperature = forecast.daily.data_class.temperature_high
+    cloud_cover = forecast.daily.data[0].cloud_cover
+    temperature = forecast.daily.data[0].temperature_high
     logger.debug(f"Cloud cover: {cloud_cover}")
     logger.debug(f"Temperature: {temperature}")
 
