@@ -12,9 +12,9 @@ emulation_temperature = 19
 # Sensor serial
 # Enter the serial code of the temperature sensor
 # Can be found at sys/bus/w1/devices/<serial_here>
-sensor_serial = "28-000005e2fdc3"
+sensor_serial = "28-00000623003b"
 
-sensor_file_path = "sys/bus/w1/devices/" + sensor_serial + "/w1_slave"
+sensor_file_path = "/sys/bus/w1/devices/" + sensor_serial + "/w1_slave"
 
 # File content example:
 # 72 01 4b 46 7f ff 0e 10 57 : crc=57 YES
