@@ -69,7 +69,7 @@ DevicesObject = energenie.device(socket_number=2, logger=logger)  # The object t
 auto_blinds = True  # If the blinds should be automatically be open and closed (bool)
 CLOUD_COVER_THRESHOLD = 0.5  # The threshold of the percentage cloud cover (float)
 TEMPERATURE_THRESHOLD = 20  # The threshold of the maximum temperature of the day (int)
-LIGHT_LEVEL_THRESHOLD = 5000  # The threshold of the light level outside (float)
+LIGHT_LEVEL_THRESHOLD = 1200000  # The threshold of the light level outside (float)
 CABIN_LOCATION = {"LATITUDE": 51.456857, "LONGITUDE": -1.053791}  # The location of the cabin (dict{float})
 LightSensorObject = lightsensor.LightSensor(logger=logger, gain="low")  # The object to receive data from the light sensor
 
