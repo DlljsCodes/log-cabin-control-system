@@ -6,7 +6,7 @@ import os  # Used for enabling two interface drivers on Raspbian
 # Emulation mode
 # Change this to true for testing purposes and/or if not on the server environment
 # You can also change the emulation_temperature variable
-emulation_mode = True
+emulation_mode = False
 emulation_temperature = 19
 
 # Sensor serial
