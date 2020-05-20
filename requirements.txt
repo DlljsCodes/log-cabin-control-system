@@ -1,0 +1,6 @@
+Flask
+darksky_weather
+adafruit-pca9685
+adafruit-blinka
+adafruit-circuitpython-pca9685
+adafruit-circuitpython-tsl2591
