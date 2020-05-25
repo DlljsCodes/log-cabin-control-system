@@ -45,7 +45,7 @@ logger.info("Starting Log Cabin Control System...")
 # Define global variables and constants
 # Main code loop
 cycle_count = 0  # How many main code loops have been performed (int)
-emulation = True
+emulation = False
 
 # Heating
 auto_heating = False  # If the heating should be automatically changed (bool)
@@ -69,7 +69,7 @@ DevicesObject = energenie.device(socket_number=2, logger=logger)  # The object t
 auto_blinds = True  # If the blinds should be automatically be open and closed (bool)
 CLOUD_COVER_THRESHOLD = 0.5  # The threshold of the percentage cloud cover (float)
 TEMPERATURE_THRESHOLD = 20  # The threshold of the maximum temperature of the day (int)
-LIGHT_LEVEL_THRESHOLD = 5000  # The threshold of the light level outside (float)
+LIGHT_LEVEL_THRESHOLD = 1200000  # The threshold of the light level outside (float)
 CABIN_LOCATION = {"LATITUDE": 51.456857, "LONGITUDE": -1.053791}  # The location of the cabin (dict{float})
 LightSensorObject = lightsensor.LightSensor(logger=logger, gain="low")  # The object to receive data from the light sensor
 
@@ -223,8 +223,8 @@ def blinds_morning():
     # Obtain forecast, specifically cloud cover and temperature max values
     logger.debug("Getting forecast")
     forecast = weather_data(CABIN_LOCATION["LATITUDE"], CABIN_LOCATION["LONGITUDE"], API_KEY)
-    cloud_cover = forecast.daily.data_class.cloud_cover
-    temperature = forecast.daily.data_class.temperature_high
+    cloud_cover = forecast.daily.data[0].cloud_cover
+    temperature = forecast.daily.data[0].temperature_high
     logger.debug(f"Cloud cover: {cloud_cover}")
     logger.debug(f"Temperature: {temperature}")
 
