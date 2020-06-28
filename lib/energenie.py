@@ -31,7 +31,7 @@ SKT_ON  = ['1011', '1111', '1110', '1101', '1100']
 SKT_OFF = ['0011', '0111', '0110', '0101', '0100']
 
 #Other GPIO Pins
-CABIN_PIR = 7    # Pin 26
+CABIN_PIR = 19    # Pin 35
 
 #----------------- Global variables for module ---------------------
 simulation_mode = False
