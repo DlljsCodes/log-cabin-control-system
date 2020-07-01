@@ -114,3 +114,18 @@ class device():
         else:
             switchEnergenie(self.socket_number, SKT_OFF,self.logger,REPEAT_ENERGENIE)
             self.state = False
+
+
+class GPIOInputDevice:
+    def __init__(self, pin_number, presence_callback):
+        self.pin_number = pin_number
+        self.presence_callback = presence_callback
+        self.state = False
+        # Setup the Cabin PIR Pin
+        GPIO.setup(self.pin_number, GPIO.IN)
+        # Setup Interrupt for Cabin PIR Sensor
+        GPIO.add_event_detect(self.pin_number, GPIO.RISING, self.presence_callback)
+
+    def get_state(self):
+        self.state = GPIO.input(self.pin_number)
+        return self.state
