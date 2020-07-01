@@ -65,6 +65,7 @@ auto_presence = True  # If the devices should be automatically turned on (bool)
 PRESENCE_TIMEOUT = 30
 DevicesObject = energenie.device(socket_number=2, logger=logger)  # The object to control the devices
 CABIN_PIR = 19    # The GPIO pin of the motion sensor (physical pin 35) (int)
+MotionSensorObject = energenie.GPIOInputDevice(CABIN_PIR, presence_interrupt)
 
 # Blinds
 auto_blinds = True  # If the blinds should be automatically be open and closed (bool)
@@ -167,12 +168,18 @@ def devices():
         logger.debug("Auto presence is true, running")
 
         # See if devices should be turned off
-        if DevicesObject.get_state() and cycle_count >= PRESENCE_TIMEOUT:
-            logger.debug("Turning off devices")  # Turn the devices off
-            DevicesObject.switch(OFF)
-            write_event("PRESTMO", None, "DEVISTA", "off", True)
-            logger.debug("Resetting cycle count back to 0")
-            cycle_count = 0  # Reset cycle count
+        if DevicesObject.get_state():
+            if MotionSensorObject.get_state():
+                logger.debug("Resetting cycle count back to 0")
+                cycle_count = 0  # Reset cycle count
+            elif cycle_count >= PRESENCE_TIMEOUT:
+                logger.debug("Turning off devices")  # Turn the devices off
+                DevicesObject.switch(OFF)
+                write_event("PRESTMO", None, "DEVISTA", "off", True)
+                logger.debug("Resetting cycle count back to 0")
+                cycle_count = 0  # Reset cycle count
+            else:
+                logger.debug("No action needed, skipping")  # Won't need to turn off now
         else:
             logger.debug("No action needed, skipping")  # Won't need to turn off now
 
@@ -622,7 +629,6 @@ def main():
 
     # Start presence detection
     logger.debug(energenie.setup(emulation))
-    motion_sensor = energenie.GPIOInputDevice(CABIN_PIR, presence_interrupt)
     
     # Set heating and devices to off
     HeaterObject.switch(OFF)
