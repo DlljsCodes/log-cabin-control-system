@@ -109,14 +109,15 @@ class device():
 
 
 class GPIOInputDevice:
-    def __init__(self, pin_number, presence_callback):
+    def __init__(self, pin_number):
         self.pin_number = pin_number
-        self.presence_callback = presence_callback
         self.state = False
         # Setup the Cabin PIR Pin
         GPIO.setup(self.pin_number, GPIO.IN)
+
+    def set_interrupt(self, presence_callback):
         # Setup Interrupt for Cabin PIR Sensor
-        GPIO.add_event_detect(self.pin_number, GPIO.RISING, self.presence_callback)
+        GPIO.add_event_detect(self.pin_number, GPIO.RISING, presence_callback)
 
     def get_state(self):
         self.state = GPIO.input(self.pin_number)

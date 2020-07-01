@@ -65,7 +65,7 @@ auto_presence = True  # If the devices should be automatically turned on (bool)
 PRESENCE_TIMEOUT = 30
 DevicesObject = energenie.device(socket_number=2, logger=logger)  # The object to control the devices
 CABIN_PIR = 19    # The GPIO pin of the motion sensor (physical pin 35) (int)
-MotionSensorObject = energenie.GPIOInputDevice(CABIN_PIR, presence_interrupt)
+MotionSensorObject = energenie.GPIOInputDevice(CABIN_PIR)
 
 # Blinds
 auto_blinds = True  # If the blinds should be automatically be open and closed (bool)
@@ -629,6 +629,7 @@ def main():
 
     # Start presence detection
     logger.debug(energenie.setup(emulation))
+    MotionSensorObject.set_interrupt(presence_interrupt)
     
     # Set heating and devices to off
     HeaterObject.switch(OFF)
