@@ -229,20 +229,23 @@ def blinds_morning():
     global CLOUD_COVER_THRESHOLD, TEMPERATURE_THRESHOLD, CABIN_LOCATION, API_KEY
 
     # Obtain forecast, specifically cloud cover and temperature max values
-    logger.debug("Getting forecast")
-    forecast = weather_data(CABIN_LOCATION["LATITUDE"], CABIN_LOCATION["LONGITUDE"], API_KEY)
-    cloud_cover = forecast.daily.data[0].cloud_cover
-    temperature = forecast.daily.data[0].temperature_high
-    logger.debug(f"Cloud cover: {cloud_cover}")
-    logger.debug(f"Temperature: {temperature}")
+    if use_darksky_api:
+        logger.debug("Getting forecast")
+        forecast = weather_data(CABIN_LOCATION["LATITUDE"], CABIN_LOCATION["LONGITUDE"], API_KEY)
+        cloud_cover = forecast.daily.data[0].cloud_cover
+        temperature = forecast.daily.data[0].temperature_high
+        logger.debug(f"Cloud cover: {cloud_cover}")
+        logger.debug(f"Temperature: {temperature}")
 
-    # Check to see if it exceeds the thresholds
-    if cloud_cover < CLOUD_COVER_THRESHOLD and temperature > TEMPERATURE_THRESHOLD:
-        logger.debug("Closing blinds")  # Close all the blinds
-        set_all_blinds(CLOSED)
-        write_event("BLNDMOR", f"{cloud_cover}, {temperature}", "BLNDSTA", "all, 20", True)
+        # Check to see if it exceeds the thresholds
+        if cloud_cover < CLOUD_COVER_THRESHOLD and temperature > TEMPERATURE_THRESHOLD:
+            logger.debug("Closing blinds")  # Close all the blinds
+            set_all_blinds(CLOSED)
+            write_event("BLNDMOR", f"{cloud_cover}, {temperature}", "BLNDSTA", "all, 20", True)
+        else:
+            logger.debug("No action needed, skipping")  # Don't need to open them today
     else:
-        logger.debug("No action needed, skipping")  # Don't need to open them today
+        logger.debug("Dark Sky API unavailable, skipping")
 
 
 # Blinds evening subroutine
