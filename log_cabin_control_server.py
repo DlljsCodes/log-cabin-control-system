@@ -170,6 +170,7 @@ def devices():
         # See if devices should be turned off
         if DevicesObject.get_state():
             if MotionSensorObject.get_state():
+                logger.debug("Motion sensor still triggered")
                 logger.debug("Resetting cycle count back to 0")
                 cycle_count = 0  # Reset cycle count
             elif cycle_count >= PRESENCE_TIMEOUT:
@@ -181,7 +182,7 @@ def devices():
             else:
                 logger.debug("No action needed, skipping")  # Won't need to turn off now
         else:
-            logger.debug("No action needed, skipping")  # Won't need to turn off now
+            logger.debug("Devices not on, skipping")  # Won't need to turn off now
 
     else:
         logger.debug("Auto presence is false, skipping")
