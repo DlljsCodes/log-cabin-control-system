@@ -58,6 +58,7 @@ DESIRED_TEMP_UPPER_BOUND = 30  # The upper bound of the desired temperature (int
 DESIRED_TEMP_LOWER_BOUND = 15  # The lower bound of the desired temperature (int)
 DESIRED_TEMP_INCREMENT = 0.5  # How much to increment or decrement the desired temperature by (float)
 DESIRED_TEMP_MARGIN = 0.5  # How much to deviate the desired temperature by when checking the actual temperature (float)
+HEATING_DAILY_TURN_OFF_TIME = 20 # Time of day to turn off if left on (int = hour of the day)
 HeaterObject = energenie.device(socket_number=1, logger=logger)  # The object to control the heater
 
 # Devices
@@ -143,7 +144,7 @@ def heating():
             # Choose action to perform
             state = HeaterObject.get_state()
             logger.debug(f"Heating state: {state}")
-            if state is ON and current_temperature > desired_temp_upper:
+            if state is ON and current_temperature > desired_temp_upper and datetime.hour > HEATING_DAILY_TURN_OFF_TIME:
                 logger.debug("Turning heating off")  # Turn the heating off
                 HeaterObject.switch(OFF)
                 write_event("TEMPABV", str(current_temperature), "HEATSTA", "off", True)
