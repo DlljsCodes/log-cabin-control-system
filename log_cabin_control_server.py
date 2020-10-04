@@ -64,6 +64,8 @@ HeaterObject = energenie.device(socket_number=1, logger=logger)  # The object to
 auto_presence = True  # If the devices should be automatically turned on (bool)
 PRESENCE_TIMEOUT = 30
 DevicesObject = energenie.device(socket_number=2, logger=logger)  # The object to control the devices
+CABIN_PIR = 19    # The GPIO pin of the motion sensor (physical pin 35) (int)
+MotionSensorObject = energenie.GPIOInputDevice(CABIN_PIR)
 
 # Blinds
 auto_blinds = True  # If the blinds should be automatically be open and closed (bool)
@@ -166,14 +168,21 @@ def devices():
         logger.debug("Auto presence is true, running")
 
         # See if devices should be turned off
-        if DevicesObject.get_state() and cycle_count >= PRESENCE_TIMEOUT:
-            logger.debug("Turning off devices")  # Turn the devices off
-            DevicesObject.switch(OFF)
-            write_event("PRESTMO", None, "DEVISTA", "off", True)
-            logger.debug("Resetting cycle count back to 0")
-            cycle_count = 0  # Reset cycle count
+        if DevicesObject.get_state():
+            if MotionSensorObject.get_state():
+                logger.debug("Motion sensor still triggered")
+                logger.debug("Resetting cycle count back to 0")
+                cycle_count = 0  # Reset cycle count
+            elif cycle_count >= PRESENCE_TIMEOUT:
+                logger.debug("Turning off devices")  # Turn the devices off
+                DevicesObject.switch(OFF)
+                write_event("PRESTMO", None, "DEVISTA", "off", True)
+                logger.debug("Resetting cycle count back to 0")
+                cycle_count = 0  # Reset cycle count
+            else:
+                logger.debug("No action needed, skipping")  # Won't need to turn off now
         else:
-            logger.debug("No action needed, skipping")  # Won't need to turn off now
+            logger.debug("Devices not on, skipping")  # Won't need to turn off now
 
     else:
         logger.debug("Auto presence is false, skipping")
@@ -221,20 +230,23 @@ def blinds_morning():
     global CLOUD_COVER_THRESHOLD, TEMPERATURE_THRESHOLD, CABIN_LOCATION, API_KEY
 
     # Obtain forecast, specifically cloud cover and temperature max values
-    logger.debug("Getting forecast")
-    forecast = weather_data(CABIN_LOCATION["LATITUDE"], CABIN_LOCATION["LONGITUDE"], API_KEY)
-    cloud_cover = forecast.daily.data[0].cloud_cover
-    temperature = forecast.daily.data[0].temperature_high
-    logger.debug(f"Cloud cover: {cloud_cover}")
-    logger.debug(f"Temperature: {temperature}")
+    if use_darksky_api:
+        logger.debug("Getting forecast")
+        forecast = weather_data(CABIN_LOCATION["LATITUDE"], CABIN_LOCATION["LONGITUDE"], API_KEY)
+        cloud_cover = forecast.daily.data[0].cloud_cover
+        temperature = forecast.daily.data[0].temperature_high
+        logger.debug(f"Cloud cover: {cloud_cover}")
+        logger.debug(f"Temperature: {temperature}")
 
-    # Check to see if it exceeds the thresholds
-    if cloud_cover < CLOUD_COVER_THRESHOLD and temperature > TEMPERATURE_THRESHOLD:
-        logger.debug("Closing blinds")  # Close all the blinds
-        set_all_blinds(CLOSED)
-        write_event("BLNDMOR", f"{cloud_cover}, {temperature}", "BLNDSTA", "all, 20", True)
+        # Check to see if it exceeds the thresholds
+        if cloud_cover < CLOUD_COVER_THRESHOLD and temperature > TEMPERATURE_THRESHOLD:
+            logger.debug("Closing blinds")  # Close all the blinds
+            set_all_blinds(CLOSED)
+            write_event("BLNDMOR", f"{cloud_cover}, {temperature}", "BLNDSTA", "all, 20", True)
+        else:
+            logger.debug("No action needed, skipping")  # Don't need to open them today
     else:
-        logger.debug("No action needed, skipping")  # Don't need to open them today
+        logger.debug("Dark Sky API unavailable, skipping")
 
 
 # Blinds evening subroutine
@@ -620,7 +632,8 @@ def main():
     validate_database_structure(DATABASE_FILE_NAME)
 
     # Start presence detection
-    logger.debug(energenie.setup(presence_interrupt, emulation))
+    logger.debug(energenie.setup(emulation))
+    MotionSensorObject.set_interrupt(presence_interrupt)
     
     # Set heating and devices to off
     HeaterObject.switch(OFF)

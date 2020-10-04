@@ -30,14 +30,11 @@ MODULATOR = 25  # Pin 22
 SKT_ON  = ['1011', '1111', '1110', '1101', '1100']
 SKT_OFF = ['0011', '0111', '0110', '0101', '0100']
 
-#Other GPIO Pins
-CABIN_PIR = 7    # Pin 26
-
 #----------------- Global variables for module ---------------------
 simulation_mode = False
 
 
-def setup(presence_callback,simulation=False):
+def setup(simulation=False):
     global simulation_mode
     if simulation:
         log_message = log_message ='Running in simulation mode. '
@@ -54,11 +51,6 @@ def setup(presence_callback,simulation=False):
         GPIO.output(FSK_SELECT, GPIO.LOW)
         # Turn off modulator
         GPIO.output(MODULATOR, GPIO.LOW)
-
-        # Setup the Cabin PIR Pin
-        GPIO.setup(CABIN_PIR, GPIO.IN)
-        # Setup Interrupt for Cabin PIR Sensor
-        GPIO.add_event_detect(CABIN_PIR, GPIO.RISING, presence_callback)
     
     if simulation_mode:
         log_message = 'Energenie module setup complete, running in simulation mode'
@@ -114,3 +106,19 @@ class device():
         else:
             switchEnergenie(self.socket_number, SKT_OFF,self.logger,REPEAT_ENERGENIE)
             self.state = False
+
+
+class GPIOInputDevice:
+    def __init__(self, pin_number):
+        self.pin_number = pin_number
+        self.state = False
+        # Setup the Cabin PIR Pin
+        GPIO.setup(self.pin_number, GPIO.IN)
+
+    def set_interrupt(self, presence_callback):
+        # Setup Interrupt for Cabin PIR Sensor
+        GPIO.add_event_detect(self.pin_number, GPIO.RISING, presence_callback)
+
+    def get_state(self):
+        self.state = GPIO.input(self.pin_number)
+        return self.state
