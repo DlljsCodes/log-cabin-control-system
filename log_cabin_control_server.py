@@ -144,7 +144,7 @@ def heating():
             # Choose action to perform
             state = HeaterObject.get_state()
             logger.debug(f"Heating state: {state}")
-            if state is ON and current_temperature > desired_temp_upper and datetime.hour > HEATING_DAILY_TURN_OFF_TIME:
+            if (state is ON and current_temperature > desired_temp_upper) or (state is ON and datetime.hour > HEATING_DAILY_TURN_OFF_TIME):
                 logger.debug("Turning heating off")  # Turn the heating off
                 HeaterObject.switch(OFF)
                 write_event("TEMPABV", str(current_temperature), "HEATSTA", "off", True)
