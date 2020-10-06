@@ -58,7 +58,7 @@ DESIRED_TEMP_UPPER_BOUND = 30  # The upper bound of the desired temperature (int
 DESIRED_TEMP_LOWER_BOUND = 15  # The lower bound of the desired temperature (int)
 DESIRED_TEMP_INCREMENT = 0.5  # How much to increment or decrement the desired temperature by (float)
 DESIRED_TEMP_MARGIN = 0.5  # How much to deviate the desired temperature by when checking the actual temperature (float)
-HEATING_DAILY_TURN_OFF_TIME = 20 # Time of day to turn off if left on (int = hour of the day in 24 hour clock)
+HEATING_DAILY_TURN_OFF_HOUR = 19 # Time of day to turn off if left on (int = hour of the day in 24 hour clock)
 HeaterObject = energenie.device(socket_number=1, logger=logger)  # The object to control the heater
 
 # Devices
@@ -125,35 +125,40 @@ def main_loop():
 def heating():
     # Get global variables
     global auto_heating, desired_temp_upper, desired_temp_lower
-
+ 
     # Only run this if heating is set to auto
     if auto_heating:
         logger.debug("Auto heating is true, running")
 
-        # Obtain current temperature
-        logger.debug("Getting temperature")
-        temp = tempsensor.get_temperature()
-        if not temp:  # In case there was a problem with the sensor
-            logger.warning("Problem getting current temperature from sensor")
-            logger.debug("Skipping...")
+        if (datetime.now().hour > HEATING_DAILY_TURN_OFF_HOUR and turned_on_hour < HEATING_DAILY_TURN_OFF_HOUR):  # Check if heating has been left on accidently
+            auto_heating = False
+            logger.debug("Turning heating mode to off as has been left on into hour of the day %d" %datetime.now().hour)
         else:
-            current_temperature = temp
-            logger.debug(f"Current temperature: {current_temperature}")
-            logger.debug(f"Desired temperature: {desired_temp}")
-
-            # Choose action to perform
-            state = HeaterObject.get_state()
-            logger.debug(f"Heating state: {state}")
-            if (state is ON and current_temperature > desired_temp_upper) or (state is ON and datetime.hour > HEATING_DAILY_TURN_OFF_TIME):
-                logger.debug("Turning heating off")  # Turn the heating off
-                HeaterObject.switch(OFF)
-                write_event("TEMPABV", str(current_temperature), "HEATSTA", "off", True)
-            elif state is OFF and current_temperature < desired_temp_lower:
-                logger.debug("Turning heating on")  # Turn the heating on
-                HeaterObject.switch(ON)
-                write_event("TEMPBEL", str(current_temperature), "HEATSTA", "on", True)
+            # Obtain current temperature
+            logger.debug("Getting temperature")
+            temp = tempsensor.get_temperature()
+            if not temp:  # In case there was a problem with the sensor
+                logger.warning("Problem getting current temperature from sensor")
+                logger.debug("Skipping...")
             else:
-                logger.debug("No action needed, skipping")  # Won't need to turn on or off now
+                current_temperature = temp
+                logger.debug(f"Current temperature: {current_temperature}")
+                logger.debug(f"Desired temperature: {desired_temp}")
+
+                # Choose action to perform
+                state = HeaterObject.get_state()
+                logger.debug(f"Heating state: {state}")
+                if (state is ON and current_temperature > desired_temp_upper):
+                    logger.debug("Turning heating off")  # Turn the heating off
+                    HeaterObject.switch(OFF)
+                    write_event("TEMPABV", str(current_temperature), "HEATSTA", "off", True)
+                elif state is OFF and current_temperature < desired_temp_lower:
+                    logger.debug("Turning heating on")  # Turn the heating on
+                    HeaterObject.switch(ON)
+                    turned_on_time = datetime.now().hour
+                    write_event("TEMPBEL", str(current_temperature), "HEATSTA", "on", True)
+                else:
+                    logger.debug("No action needed, skipping")  # Won't need to turn on or off now
 
     else:
         logger.debug("Auto heating is false, skipping")
