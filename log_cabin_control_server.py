@@ -58,7 +58,7 @@ DESIRED_TEMP_UPPER_BOUND = 30  # The upper bound of the desired temperature (int
 DESIRED_TEMP_LOWER_BOUND = 15  # The lower bound of the desired temperature (int)
 DESIRED_TEMP_INCREMENT = 0.5  # How much to increment or decrement the desired temperature by (float)
 DESIRED_TEMP_MARGIN = 0.5  # How much to deviate the desired temperature by when checking the actual temperature (float)
-HEATING_DAILY_TURN_OFF_HOUR = 19 # Time of day to turn off if left on (int = hour of the day in 24 hour clock)
+HEATING_DAILY_TURN_OFF_HOUR = 20 # Time of day to turn off if left on (int = hour of the day in 24 hour clock)
 HeaterObject = energenie.device(socket_number=1, logger=logger)  # The object to control the heater
 
 # Devices
