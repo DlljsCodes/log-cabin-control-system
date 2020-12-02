@@ -155,7 +155,6 @@ def heating():
                 elif state is OFF and current_temperature < desired_temp_lower:
                     logger.debug("Turning heating on")  # Turn the heating on
                     HeaterObject.switch(ON)
-                    turned_on_time = datetime.now().hour
                     write_event("TEMPBEL", str(current_temperature), "HEATSTA", "on", True)
                 else:
                     logger.debug("No action needed, skipping")  # Won't need to turn on or off now
@@ -465,6 +464,7 @@ def setheatingmode():
     if mode == "auto":
         logger.debug("Setting auto mode to on")
         auto_heating = ON
+        turned_on_hour = datetime.now().hour
         write_event("APIHEMO", mode, "HEATMOD", "on", False)
     elif mode == "manual":
         logger.debug("Setting auto mode to off")
