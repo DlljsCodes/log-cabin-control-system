@@ -45,7 +45,7 @@ logger.info("Starting Log Cabin Control System...")
 # Define global variables and constants
 # Main code loop
 cycle_count = 0  # How many main code loops have been performed (int)
-emulation = False
+emulation = True
 
 # Heating
 auto_heating = False  # If the heating should be automatically changed (bool)
