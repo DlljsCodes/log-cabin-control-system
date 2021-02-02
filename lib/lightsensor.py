@@ -9,7 +9,8 @@ try:
     module_fail = False
 except ModuleNotFoundError:
     module_fail = True
-
+except NotImplementedError:
+    module_fail = True
 
 class LightSensor:
     def __init__(self, logger, gain="med", integration_time=100):

@@ -66,7 +66,7 @@ auto_presence = True  # If the devices should be automatically turned on (bool)
 PRESENCE_TIMEOUT = 30
 DevicesObject = energenie.device(socket_number=2, logger=logger)  # The object to control the devices
 CABIN_PIR = 19    # The GPIO pin of the motion sensor (physical pin 35) (int)
-MotionSensorObject = energenie.GPIOInputDevice(CABIN_PIR)
+MotionSensorObject = energenie.GPIOInputDevice(CABIN_PIR,emulation)
 
 # Blinds
 auto_blinds = True  # If the blinds should be automatically be open and closed (bool)
@@ -85,7 +85,7 @@ blind_objects = {  # List of objects to control the blinds
 
 # Miscellaneous
 app = Flask(__name__)  # Flask app initialisation
-BIND = "0.0.0.0"
+BIND = "127.0.0.1"
 PORT = 7890
 app_thread = threading.Thread(target=app.run, kwargs={"host":BIND,"port":PORT}, name="cabinapi", daemon=True)  # Flask app thread
 use_darksky_api = False  # If Dark Sky API functions should be used or not (bool)
