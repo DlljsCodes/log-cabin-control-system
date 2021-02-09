@@ -15,7 +15,9 @@ try:
    import board
 except ImportError:
    RPi_module_import_fail = True
-   
+except NotImplementedError:
+   RPi_module_import_fail = True
+
 try:
    import busio
 except ImportError:
