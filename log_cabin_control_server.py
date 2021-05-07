@@ -124,13 +124,13 @@ def main_loop():
 # Heating subroutine
 def heating():
     # Get global variables
-    global auto_heating, desired_temp_upper, desired_temp_lower
+    global auto_heating, desired_temp_upper, desired_temp_lower, turned_on_hour
  
     # Only run this if heating is set to auto
     if auto_heating:
         logger.debug("Auto heating is true, running")
 
-        if (datetime.now().hour > HEATING_DAILY_TURN_OFF_HOUR and turned_on_hour < HEATING_DAILY_TURN_OFF_HOUR):  # Check if heating has been left on accidently
+        if (datetime.now().hour >= HEATING_DAILY_TURN_OFF_HOUR and turned_on_hour <= HEATING_DAILY_TURN_OFF_HOUR):  # Check if heating has been left on accidently
             auto_heating = False
             logger.debug("Turning heating mode to off as has been left on into hour of the day %d" %datetime.now().hour)
         else:
@@ -455,7 +455,7 @@ def setheatingmode():
         abort(400)  # Send bad request error
 
     # Get global variables
-    global auto_heating, heating_mode
+    global auto_heating, heating_mode, turned_on_hour
 
     # Get mode from request
     mode = request.json["mode"]
