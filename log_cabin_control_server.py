@@ -85,7 +85,7 @@ blind_objects = {  # List of objects to control the blinds
 
 # Miscellaneous
 app = Flask(__name__)  # Flask app initialisation
-BIND = "127.0.0.1"
+BIND = "127.0.0.1" # Change to 127.0.0.1 for simulation Change to 0.0.0.0 for production
 PORT = 7890
 app_thread = threading.Thread(target=app.run, kwargs={"host":BIND,"port":PORT}, name="cabinapi", daemon=True)  # Flask app thread
 use_darksky_api = False  # If Dark Sky API functions should be used or not (bool)
