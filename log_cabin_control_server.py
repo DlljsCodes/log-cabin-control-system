@@ -54,10 +54,10 @@ heating_mode = "off"  # The heating mode set in the interface (to be depreciated
 desired_temp = 20.0  # The desired temperature that should be maintained (float)
 desired_temp_upper = 20.5  # The upper margin of the desired temperature (float)
 desired_temp_lower = 19.5  # The lower margin of the desired temperature (float)
-DESIRED_TEMP_UPPER_BOUND = 30  # The upper bound of the desired temperature (int)
-DESIRED_TEMP_LOWER_BOUND = 15  # The lower bound of the desired temperature (int)
+DESIRED_TEMP_UPPER_BOUND = 25  # The upper bound of the desired temperature (int)
+DESIRED_TEMP_LOWER_BOUND = 12  # The lower bound of the desired temperature (int)
 DESIRED_TEMP_INCREMENT = 0.5  # How much to increment or decrement the desired temperature by (float)
-DESIRED_TEMP_MARGIN = 0.5  # How much to deviate the desired temperature by when checking the actual temperature (float)
+DESIRED_TEMP_MARGIN = 0.25  # How much to deviate the desired temperature by when checking the actual temperature (float)
 HEATING_DAILY_TURN_OFF_HOUR = 20 # Time of day to turn off if left on (int = hour of the day in 24 hour clock)
 HeaterObject = energenie.device(socket_number=1, logger=logger)  # The object to control the heater
 
